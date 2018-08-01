@@ -11,8 +11,7 @@
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Comparator;
 
 public class Point implements Comparable<Point> {
@@ -150,22 +149,21 @@ public class Point implements Comparable<Point> {
     StdOut.println("Slope to point 2 from point 1 is: " + p1.slopeTo(p2));
     StdOut.println("Slope to point 3 from point 1 is: " + p1.slopeTo(p3));
     
-    ArrayList<Point> aList = new ArrayList<Point>();
-    aList.add(p1);
-    aList.add(p2);
-    aList.add(p3);
+    Point[] aList = new Point[3];
+    aList[0] = p1;
+    aList[1] = p2;
+    aList[2] = p3;
     
     for (Point i: aList) {
       StdOut.println("i = " + i);
     }
     
     StdOut.println("Sorting array...");
-    Collections.sort(aList);
+    Arrays.sort(aList);
     
     for (Point i: aList) {
-      StdOut.println("i = " + i + " with slope = " + i.slopeTo(p1) +
+      StdOut.println("aList = " + i + " with slope = " + i.slopeTo(p1) +
           ", " + i.slopeTo(p2) + ", " + i.slopeTo(p3));
-    }
-    
+    }    
   }
 }
