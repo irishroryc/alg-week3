@@ -135,12 +135,13 @@ public class Point implements Comparable<Point> {
   }
 
   /**
-   * Unit tests the Point data type.
-   */
+   * Unit tests the Point data type. 
+   **/
+ 
   public static void main(String[] args) {
-    Point p1 = new Point(1, 2);
+    Point p1 = new Point(3, 2);
     Point p2 = new Point(3, 7);
-    Point p3 = new Point(10, 5);
+    Point p3 = new Point(3, 5);
     
     StdOut.println("Point 1 = " + p1);
     StdOut.println("Point 2 = " + p2);
@@ -164,6 +165,11 @@ public class Point implements Comparable<Point> {
     for (Point i: aList) {
       StdOut.println("aList = " + i + " with slope = " + i.slopeTo(p1) +
           ", " + i.slopeTo(p2) + ", " + i.slopeTo(p3));
-    }    
+    }
+    
+    StdOut.println("Testing equality");
+    // StdOut.println("p1 == p1? " + (p1 == p1));
+    StdOut.println("p1 == p2? " + (p1 == p2));
+    StdOut.println("p1.compareTo(p2)? " + p1.compareTo(p2));
   }
 }
