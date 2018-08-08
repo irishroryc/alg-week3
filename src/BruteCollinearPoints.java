@@ -15,9 +15,9 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class BruteCollinearPoints {
   private int lineSegmentCount;
-  private int arrayLength;
+  final private int arrayLength;
   private Point[] inputArray;
-  private ArrayList<LineSegment> lineSegments = new ArrayList<LineSegment>();
+  final private ArrayList<LineSegment> lineSegments = new ArrayList<LineSegment>();
   
   // finds all line segments containing 4 points 
   public BruteCollinearPoints(Point[] points) {
@@ -27,14 +27,14 @@ public class BruteCollinearPoints {
     
     arrayLength = points.length;
     lineSegmentCount = 0;
-    StdOut.println("Array length is " + arrayLength);
+    // StdOut.println("Array length is " + arrayLength);
     
     if (checkDupes(points)) {
       throw new IllegalArgumentException();
     }
     
     for (Point p : points) {
-      StdOut.println(" * " + p);
+      // StdOut.println(" * " + p);
       if (p == null) {
         throw new IllegalArgumentException();
       }
@@ -71,11 +71,11 @@ public class BruteCollinearPoints {
             valPts[3] = inputArray[m];
             if (valPts[0].slopeTo(valPts[1]) == valPts[0].slopeTo(valPts[2])) {
               if (valPts[0].slopeTo(valPts[1]) == valPts[0].slopeTo(valPts[3])) {
-                StdOut.println("Found collinear points! Will add to lineSegments[" + lineSegmentCount + "]");
+                // StdOut.println("Found collinear points! Will add to lineSegments[" + lineSegmentCount + "]");
                 Arrays.sort(valPts);
-                StdOut.println("DEBUG: Collinear points are (" + valPts[0] + ", " + valPts[1] + ", " + valPts[2] + ", " + valPts[3] + ")");
+                // StdOut.println("DEBUG: Collinear points are (" + valPts[0] + ", " + valPts[1] + ", " + valPts[2] + ", " + valPts[3] + ")");
                 LineSegment foundSegment = new LineSegment(valPts[0], valPts[3]);
-                StdOut.println("New line segment is " + foundSegment);
+                // StdOut.println("New line segment is " + foundSegment);
                 lineSegments.add(foundSegment);
                 lineSegmentCount++;
               }
@@ -122,7 +122,7 @@ public class BruteCollinearPoints {
     // print and draw the line segments
     BruteCollinearPoints collinear = new BruteCollinearPoints(points);
     for (LineSegment segment : collinear.segments()) {
-        StdOut.println("Segment = " + segment);
+        // StdOut.println("Segment = " + segment);
         segment.draw();
     }
     StdDraw.show();

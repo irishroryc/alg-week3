@@ -15,9 +15,9 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class FastCollinearPoints {
   private int lineSegmentCount;
-  private int arrayLength;
+  final private int arrayLength;
   private Point[] inputArray;
-  private ArrayList<LineSegment> lineSegments = new ArrayList<LineSegment>();
+  final private ArrayList<LineSegment> lineSegments = new ArrayList<LineSegment>();
   
   // finds all line segments containing 4 points 
   public FastCollinearPoints(Point[] points) {
@@ -27,14 +27,14 @@ public class FastCollinearPoints {
     
     arrayLength = points.length;
     lineSegmentCount = 0;
-    StdOut.println("Array length is " + arrayLength);
+    // StdOut.println("Array length is " + arrayLength);
     
     if (checkDupes(points)) {
       throw new IllegalArgumentException();
     }
     
     for (Point p : points) {
-      StdOut.println(" * " + p);
+      // StdOut.println(" * " + p);
       if (p == null) {
         throw new IllegalArgumentException();
       }
@@ -63,20 +63,20 @@ public class FastCollinearPoints {
     for (int i = 0; i < arrayLength; i++) {
       Point basePoint = inputArray[i];
       Arrays.sort(inputArray, i+1, arrayLength, basePoint.slopeOrder());
-      StdOut.println("Array sorted on " + basePoint + ":");
+      // StdOut.println("Array sorted on " + basePoint + ":");
       for (int k = i + 1; k < arrayLength - 2; k++) {
         int equalPoints = 0;
         Point endPoint = null;
         double slope = basePoint.slopeTo(inputArray[k]);
-        StdOut.println("Slope for initial point compare is " + slope);
+        // StdOut.println("Slope for initial point compare is " + slope);
         for (int t = k + 1; t < arrayLength - 1; t++) {
           StdOut.println("Point " + t + ": " + inputArray[t] + ", slope = " + basePoint.slopeTo(inputArray[t]));
           if (slope == basePoint.slopeTo(inputArray[t])) {
             equalPoints++;
             endPoint = inputArray[t];
-            StdOut.println("DEBUG: Found matching slopes! equalPoints = " + equalPoints);
+            // StdOut.println("DEBUG: Found matching slopes! equalPoints = " + equalPoints);
             if (t == arrayLength - 2) {
-              StdOut.println("Final point in array, evaluating adding segment.");
+              // StdOut.println("Final point in array, evaluating adding segment.");
               if (equalPoints > 1) {
                 addSegment(basePoint, endPoint);
               }
@@ -99,7 +99,7 @@ public class FastCollinearPoints {
 
   private void addSegment(Point p1, Point p2) {
     LineSegment foundSegment = new LineSegment(p1, p2);
-    StdOut.println("New line segment is " + foundSegment);
+    // StdOut.println("New line segment is " + foundSegment);
     lineSegments.add(foundSegment);
     lineSegmentCount++;
   }
