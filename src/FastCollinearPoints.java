@@ -1,8 +1,9 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
-import edu.princeton.cs.algs4.StdOut;
 
 /*************************************************************************
  *  Compilation:  javac FastCollinearPoints.java
@@ -14,22 +15,13 @@ import edu.princeton.cs.algs4.StdOut;
  *************************************************************************/
 
 public class FastCollinearPoints {
-  private int lineSegmentCount;
-  final private int arrayLength;
-  private Point[] inputArray;
-  final private ArrayList<LineSegment> lineSegments = new ArrayList<LineSegment>();
+  final private ArrayList<LineSegment> lineSegments = new ArrayList<>();
+  final private ArrayList<Point> beginPoints = new ArrayList<>();
+  final private ArrayList<Point> endPoints = new ArrayList<>();
   
   // finds all line segments containing 4 points 
   public FastCollinearPoints(Point[] points) {
     if (points == null) {
-      throw new IllegalArgumentException();
-    }
-    
-    arrayLength = points.length;
-    lineSegmentCount = 0;
-    // StdOut.println("Array length is " + arrayLength);
-    
-    if (checkDupes(points)) {
       throw new IllegalArgumentException();
     }
     
@@ -39,81 +31,84 @@ public class FastCollinearPoints {
         throw new IllegalArgumentException();
       }
     }
-    
-    if (arrayLength > 3) {
-       // lineSegments = new LineSegment[2];
-       inputArray = points;
-       validateLineSegments();
-     }
-  }
-  
-  private boolean checkDupes(Point[] pointArray) {
-    boolean dupes = false;
-    for (int i = 0; i < arrayLength - 1; i++) {
-      for (int k = i + 1; k < arrayLength; k++) {
-        if (pointArray[i] == pointArray[k]) {
-          dupes = true;
-        }	
+
+    checkDupes(points);
+
+    Point[] inputArray = Arrays.copyOf(points, points.length);
+
+    for (Point basePoint : points) {
+      Arrays.sort(inputArray, basePoint.slopeOrder());
+
+      double slope = 0;
+      double lastSlope = Double.NEGATIVE_INFINITY;
+      ArrayList<Point> linePoints = new ArrayList<>();
+      
+      for (int i = 1; i < inputArray.length; i++) {
+        slope = basePoint.slopeTo(inputArray[i]);
+        // StdOut.println("Calculate slope as: " + slope);
+        
+        if (slope == lastSlope) {
+          // StdOut.println("Found matching slope!");
+          linePoints.add(inputArray[i]);
+        } else {
+          if (linePoints.size() >= 3) {
+            linePoints.add(basePoint);
+            // StdOut.println("Running addNewSegment for slope = " + lastSlope);
+            addSegment(linePoints);
+          } 
+          linePoints.clear();
+          linePoints.add(inputArray[i]);
+        }
+        lastSlope = slope;
+      }
+      
+      if (linePoints.size() >= 3) {
+        linePoints.add(basePoint);
+        // StdOut.println("Running addNewSegment for slope = " + lastSlope);
+        addSegment(linePoints);
       }
     }
-    return dupes;
   }
   
-  private void validateLineSegments() {
-    for (int i = 0; i < arrayLength; i++) {
-      Point basePoint = inputArray[i];
-      Arrays.sort(inputArray, i+1, arrayLength, basePoint.slopeOrder());
-      // StdOut.println("Array sorted on " + basePoint + ":");
-      for (int k = i + 1; k < arrayLength - 2; k++) {
-        int equalPoints = 0;
-        Point endPoint = null;
-        double slope = basePoint.slopeTo(inputArray[k]);
-        // StdOut.println("Slope for initial point compare is " + slope);
-        for (int t = k + 1; t < arrayLength - 1; t++) {
-          StdOut.println("Point " + t + ": " + inputArray[t] + ", slope = " + basePoint.slopeTo(inputArray[t]));
-          if (slope == basePoint.slopeTo(inputArray[t])) {
-            equalPoints++;
-            endPoint = inputArray[t];
-            // StdOut.println("DEBUG: Found matching slopes! equalPoints = " + equalPoints);
-            if (t == arrayLength - 2) {
-              // StdOut.println("Final point in array, evaluating adding segment.");
-              if (equalPoints > 1) {
-                addSegment(basePoint, endPoint);
-              }
-              equalPoints = 0;
-            }
-          } else {
-            if (equalPoints > 1) {
-              addSegment(basePoint, endPoint);
-              equalPoints = 0;
-              endPoint = inputArray[t];
-            } else {
-              equalPoints = 0;
-              endPoint = inputArray[t];
-            } 
-          }
+  private void checkDupes(Point[] pointArray) {
+    for (int i = 0; i < pointArray.length; i++) {
+      for (int k = i + 1; k < pointArray.length; k++) {
+        if (pointArray[i].compareTo(pointArray[k]) == 0) {
+          throw new IllegalArgumentException("Duplicate points found in input!");
         }
       }
     }
   }
+    
+  private void addSegment(ArrayList<Point> linePoints) {
+    Collections.sort(linePoints);
+    Point newBeginPoint = linePoints.get(0);
+    Point newEndPoint = linePoints.get(linePoints.size() - 1);
 
-  private void addSegment(Point p1, Point p2) {
-    LineSegment foundSegment = new LineSegment(p1, p2);
-    // StdOut.println("New line segment is " + foundSegment);
-    lineSegments.add(foundSegment);
-    lineSegmentCount++;
+    for (Point p : beginPoints) {
+      if (newBeginPoint.compareTo(p) == 0) {
+        for (Point s : endPoints) {
+          if (newEndPoint.compareTo(s) == 0) {
+            // StdOut.println("Duplicate line segment found, skipping!");
+            return;
+          }
+        }
+      }
+    }
+    
+    beginPoints.add(newBeginPoint);
+    endPoints.add(newEndPoint);
+    lineSegments.add(new LineSegment(newBeginPoint, newEndPoint));
   }
   
 // the number of line segments
   public int numberOfSegments() {
-    return lineSegmentCount;
+    return lineSegments.size();
   }
   
 // the line segments
   public LineSegment[] segments() {
-	LineSegment[] temp = new LineSegment[lineSegmentCount];
-	lineSegments.toArray(temp);
-    return temp;
+    return lineSegments.toArray(new LineSegment[lineSegments.size()]);
   }
   
   public static void main(String[] args) {
@@ -140,7 +135,7 @@ public class FastCollinearPoints {
     // print and draw the line segments
     FastCollinearPoints collinear = new FastCollinearPoints(points);
     for (LineSegment segment : collinear.segments()) {
-        StdOut.println("Segment = " + segment);
+        // StdOut.println("Segment = " + segment);
         segment.draw();
     }
     StdDraw.show();
